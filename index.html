@@ -200,7 +200,7 @@ $("sort").onchange=renderTable;
 $("ema20").onchange=()=>loadPrice($("coin").value,+$("period").value);
 $("ema50").onchange=()=>loadPrice($("coin").value,+$("period").value);
 load();
-setInterval(()=>{if(!document.hidden)load()},15*60*1000);
+setInterval(()=>{if(!document.hidden)load()},5*60*1000);
 </script>
 </body>
 </html>
