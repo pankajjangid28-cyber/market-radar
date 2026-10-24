@@ -121,7 +121,7 @@ async function load(){
  $("coin").innerHTML=coins.map(c=>`<option value="${c.id}">${c.name} (${c.symbol.toUpperCase()})</option>`).join("");
  $("coin").value=coins.some(c=>c.id===old)?old:"bitcoin";
  renderTable();renderChips();
- await Promise.all([loadPrice($("coin").value,+$("period").value),loadCompare()]);
+ await loadPrice($("coin").value,+$("period").value);
  }catch(e){$("status").textContent="Data unavailable";$("status").className="pill bad";error(e.message+" The dashboard remains available; try refreshing shortly.")}
  finally{$("refresh").disabled=false}
 }
@@ -199,7 +199,7 @@ $("search").oninput=renderTable;
 $("sort").onchange=renderTable;
 $("ema20").onchange=()=>loadPrice($("coin").value,+$("period").value);
 $("ema50").onchange=()=>loadPrice($("coin").value,+$("period").value);
-load();
+load().then(()=>loadCompare());
 setInterval(()=>{if(!document.hidden)load()},5*60*1000);
 </script>
 </body>
