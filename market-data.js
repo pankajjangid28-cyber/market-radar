@@ -43,3 +43,6 @@ async function getLiveCryptoPrices() {
 
 // Example usage:
 // getLiveCryptoPrices().then(console.log).catch(console.error);
+getLiveCryptoPrices()
+  .then(coins => console.log("Live crypto prices (AUD):", coins))
+  .catch(error => console.error("Could not load crypto prices:", error));
