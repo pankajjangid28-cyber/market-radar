@@ -1,298 +1,206 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Market Radar — Live Crypto</title>
+<title>Market Radar PRO | Crypto Intelligence</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{color-scheme:dark;--bg:#09111f;--card:#121e31;--line:#293952;--text:#eef4ff;--muted:#9aacc6;--blue:#65a6ff;--green:#38d996;--red:#ff7885}
+:root{color-scheme:dark;--bg:#080d18;--card:#121e31;--line:#293952;--text:#eef4ff;--muted:#91a3bf;--green:#36d6a3;--red:#ff7185;--blue:#7ca7ff;--gold:#f4c76b}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,Arial,sans-serif}
-main{max-width:1250px;margin:auto;padding:22px}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-h1{margin:0;font-size:27px}h2{font-size:18px;margin-top:0}
-.muted{color:var(--muted)}small{color:var(--muted)}
-.notice{background:#332c19;border:1px solid #66552a;padding:13px;border-radius:12px;margin:18px 0;line-height:1.5}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:17px;min-width:0}
-.metric{font-size:25px;font-weight:750;margin-top:7px}
-.controls{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}
-input,select,button{font:inherit;color:var(--text);background:#0b1627;border:1px solid var(--line);border-radius:8px;padding:10px}
-input,select{max-width:100%}button{cursor:pointer;background:#1c3960}
-button:hover{background:#285181}
-.tablewrap{overflow:auto}
-table{border-collapse:collapse;width:100%;min-width:780px}
-th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
-th{color:var(--muted);font-size:12px}
-.asset{font-weight:700}.symbol{display:block;font-size:12px;color:var(--muted)}
-.up,.buy{color:var(--green)}.down,.avoid{color:var(--red)}.hold{color:#ffd479}
-.pill{font-size:12px;font-weight:700}
-canvas{width:100%;height:230px;display:block}
-.calcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-.result{font-size:20px;font-weight:700;margin-top:8px;overflow-wrap:anywhere}
-footer{padding:25px 0;color:var(--muted);font-size:12px;line-height:1.6}
+body{margin:0;background:radial-gradient(ellipse at top,#172642,var(--bg) 65%);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:1450px;margin:auto;padding:22px}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:27px;margin:0}h2{font-size:17px;margin:0 0 5px}h3{font-size:13px;margin:0}
+.sub,.muted{color:var(--muted);font-size:12px}
+button,select,input{background:#192740;color:var(--text);border:1px solid #344663;border-radius:9px;padding:10px;font:inherit}
+button{cursor:pointer;font-weight:650}.primary{background:linear-gradient(120deg,#648fff,#9a79ff);border:0}
+.notice{background:#2b2518;color:#f7dfa0;border:1px solid #65552a;border-radius:12px;padding:13px;margin-bottom:15px;font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.panel{background:linear-gradient(145deg,#152239,#0e1727);border:1px solid var(--line);border-radius:15px;padding:16px;min-width:0}
+.stat-label{font-size:12px;color:var(--muted)}.stat-value{font-size:25px;font-weight:800;margin:5px 0}
+.layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,.8fr);gap:14px;align-items:start}
+.stack{display:grid;gap:14px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.controls input,.controls select{font-size:12px;padding:8px}
+.chart{height:320px;position:relative}.chart.short{height:245px}
+.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#26354e;font-size:11px;font-weight:700}
+.good{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--gold)}
+.metrics{display:grid;gap:8px}.metric{display:flex;justify-content:space-between;gap:12px;padding:10px;background:#0b1423;border:1px solid #25344d;border-radius:9px}
+.metric span{color:var(--muted);font-size:12px}.metric strong{font-size:12px;text-align:right}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.chip{padding:7px 9px;font-size:11px}
+table{border-collapse:collapse;width:100%;min-width:680px}th,td{padding:11px 9px;border-bottom:1px solid #28364c;text-align:right;white-space:nowrap}th{font-size:10px;color:var(--muted);text-transform:uppercase}th:first-child,td:first-child{text-align:left}
+.tablewrap{overflow:auto}.asset{font-weight:700}.symbol{font-size:10px;color:var(--muted)}
+.pattern{padding:12px;border:1px solid #2a3952;border-radius:11px;background:#0b1423;margin-top:9px}.pattern p{font-size:12px;color:var(--muted);margin:5px 0 0}
+.error{display:none;background:#3a1c28;border:1px solid #854155;border-radius:10px;padding:12px;margin:12px 0;color:#ffc5ce}
+footer{text-align:center;padding:24px;color:var(--muted);font-size:11px}
+@media(max-width:850px){main{padding:12px}.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.chart{height:270px}}
+@media(max-width:480px){h1{font-size:22px}.panel{padding:12px}.stat-value{font-size:21px}}
 </style>
 </head>
 <body>
 <main>
 <header>
-  <div><h1>🌐 Market Radar</h1><div class="muted">Live crypto market scanner · AUD</div></div>
-  <button id="refresh">↻ Refresh now</button>
+ <div><h1>🌐 Market Radar <span style="color:#91aaff">PRO</span></h1><div class="sub">Crypto intelligence · AUD markets · Technical analysis</div></div>
+ <div class="controls"><span class="pill" id="status">Connecting…</span><button class="primary" id="refresh">↻ Refresh data</button></div>
 </header>
-
-<div class="notice">
-  <strong>Important:</strong> Market data is supplied by CoinGecko's public API and may be delayed, limited or unavailable. Signals are simple screening rules, not predictions or personalised financial advice. A 20% gain is not guaranteed. This dashboard does not execute trades.
-</div>
-
-<div class="grid">
-  <div class="card"><small>Coins loaded</small><div class="metric" id="count">—</div><small>Market-cap-ranked results</small></div>
-  <div class="card"><small>Positive 24-hour moves</small><div class="metric up" id="positive">—</div><small>Not a buy recommendation</small></div>
-  <div class="card"><small>Buy-watch signals</small><div class="metric" id="buys">—</div><small>Rules-based screening only</small></div>
-  <div class="card"><small>Last updated</small><div class="metric" style="font-size:18px" id="updated">Waiting…</div><small id="status">Connecting to data source</small></div>
-</div>
-
-<section class="card">
-  <h2>Live market watchlist</h2>
-  <div class="controls">
-    <input id="search" placeholder="Search coin or symbol…" aria-label="Search coins">
-    <select id="sort" aria-label="Sort coins">
-      <option value="market_cap">Largest market cap</option>
-      <option value="change24">Best 24h movement</option>
-      <option value="change7">Best 7d movement</option>
-      <option value="volume">Highest 24h volume</option>
-    </select>
-    <select id="filter" aria-label="Filter coins">
-      <option value="all">All signals</option>
-      <option value="BUY WATCH">BUY WATCH</option>
-      <option value="HOLD">HOLD</option>
-      <option value="AVOID">AVOID</option>
-    </select>
-  </div>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th>Asset</th><th>Price (AUD)</th><th>24h</th><th>7d</th><th>Market cap</th><th>24h volume</th><th>Screening signal</th></tr></thead>
-      <tbody id="rows"><tr><td colspan="7">Loading live market data…</td></tr></tbody>
-    </table>
-  </div>
-  <p class="muted" id="shown"></p>
+<div class="notice"><b>Research tool, not a trading bot.</b> Technical patterns describe historical data; they cannot reliably predict future prices. This dashboard does not execute trades. CoinGecko API limits may delay or interrupt data.</div>
+<div id="error" class="error"></div>
+<section class="stats">
+ <div class="panel"><div class="stat-label">Assets loaded</div><div class="stat-value" id="count">—</div><div class="sub">Market-cap ranked</div></div>
+ <div class="panel"><div class="stat-label">Market breadth</div><div class="stat-value" id="breadth">—</div><div class="sub">Assets up over 24 hours</div></div>
+ <div class="panel"><div class="stat-label">Momentum watch</div><div class="stat-value" id="momentum">—</div><div class="sub">Rules-based screening only</div></div>
+ <div class="panel"><div class="stat-label">Last updated</div><div class="stat-value" id="updated" style="font-size:18px">—</div><div class="sub">Prices may be delayed</div></div>
 </section>
-
-<div class="grid">
-  <section class="card" style="grid-column:span 2">
-    <h2>Seven-day price chart</h2>
-    <label for="coinSelect">Choose a coin</label>
-    <select id="coinSelect"><option value="">Waiting for coins…</option></select>
-    <canvas id="chart" aria-label="Seven-day price chart"></canvas>
-    <small id="chartNote">Chart uses available seven-day price samples; it is not a forecast.</small>
-  </section>
+<section class="layout">
+<div class="stack">
+ <div class="panel">
+  <div class="head"><div><h2>Price & trend explorer</h2><div class="sub">Historical prices, moving averages and possible trend structures</div></div><div class="controls"><select id="coin"></select><select id="period"><option value="1">24 hours</option><option value="7" selected>7 days</option><option value="30">30 days</option><option value="90">90 days</option></select></div></div>
+  <div class="chart"><canvas id="priceChart"></canvas></div>
+  <div class="controls" style="margin-top:12px"><label class="pill"><input type="checkbox" id="ema20" checked> EMA 20</label><label class="pill"><input type="checkbox" id="ema50" checked> EMA 50</label></div>
+  <p class="sub" id="chartNote">Loading price history…</p>
+ </div>
+ <div class="panel">
+  <div class="head"><div><h2>Compare coin performance</h2><div class="sub">Normalized percentage change, starting at zero</div></div><select id="comparePeriod"><option value="7">7 days</option><option value="30">30 days</option><option value="90">90 days</option></select></div>
+  <div class="chips" id="chips"></div>
+  <div class="chart short"><canvas id="compareChart"></canvas></div>
+  <p class="sub">Compare how assets performed over the same period. Past performance does not predict future returns.</p>
+ </div>
+ <div class="panel">
+  <div class="head"><div><h2>Live market watchlist</h2><div class="sub">Search and sort market data</div></div><div class="controls"><input id="search" placeholder="Search coin…"><select id="sort"><option value="cap">Market cap</option><option value="day">Best 24h</option><option value="week">Best 7d</option><option value="volume">Highest volume</option></select></div></div>
+  <div class="tablewrap"><table><thead><tr><th>Asset</th><th>Price AUD</th><th>24h</th><th>7d</th><th>Market cap</th><th>Volume</th><th>Screen</th></tr></thead><tbody id="rows"><tr><td colspan="7">Loading market data…</td></tr></tbody></table></div>
+ </div>
 </div>
-
-<section class="card">
-  <h2>Position risk calculator</h2>
-  <p class="muted">Enter your intended entry price. These are hypothetical levels only; no order will be placed.</p>
-  <div class="calcgrid">
-    <label>Entry price (AUD)<br><input id="entry" type="number" min="0" step="any" placeholder="e.g. 100"></label>
-    <label>Stop-loss distance (%)<br><input id="stopPct" type="number" min="0.1" max="50" step="0.1" value="5"></label>
-    <label>Profit target (%)<br><input id="targetPct" type="number" min="0.1" max="500" step="0.1" value="20"></label>
-    <label>Amount invested (AUD)<br><input id="amount" type="number" min="0" step="any" value="100"></label>
+<aside class="stack">
+ <div class="panel">
+  <div class="head"><div><h2>Technical snapshot</h2><div class="sub" id="selectedName">Selected coin</div></div><span id="trend" class="pill">—</span></div>
+  <div class="metrics">
+   <div class="metric"><span>24-hour change</span><strong id="m24">—</strong></div>
+   <div class="metric"><span>7-day change</span><strong id="m7">—</strong></div>
+   <div class="metric"><span>RSI (14)</span><strong id="mrsi">—</strong></div>
+   <div class="metric"><span>EMA 20 vs EMA 50</span><strong id="mema">—</strong></div>
+   <div class="metric"><span>Recent range low</span><strong id="mlow">—</strong></div>
+   <div class="metric"><span>Recent range high</span><strong id="mhigh">—</strong></div>
+   <div class="metric"><span>Volume / market cap</span><strong id="mvol">—</strong></div>
   </div>
-  <div class="grid">
-    <div class="card"><small>Hypothetical stop-loss price</small><div class="result down" id="stopPrice">—</div></div>
-    <div class="card"><small>Hypothetical target price</small><div class="result up" id="targetPrice">—</div></div>
-    <div class="card"><small>Loss if stop is reached</small><div class="result down" id="loss">—</div></div>
-    <div class="card"><small>Gain at target</small><div class="result up" id="gain">—</div></div>
-  </div>
-  <small>Illustrative calculations exclude trading fees, slippage, gaps and taxes. A stop-loss cannot guarantee the execution price or cap the loss.</small>
+  <p class="sub">RSI above 70 can indicate strong or overbought momentum; below 30 can indicate weak or oversold momentum. Neither guarantees a reversal.</p>
+ </div>
+ <div class="panel"><h2>Pattern watch</h2><div class="sub">Observations from the selected chart</div><div id="patterns">Loading…</div></div>
+ <div class="panel"><h2>Signal guide</h2>
+  <div class="pattern"><span class="pill good">Momentum</span><p>Recent prices or averages show upward momentum. A reversal remains possible.</p></div>
+  <div class="pattern"><span class="pill warn">Mixed</span><p>Indicators disagree or price action is relatively sideways.</p></div>
+  <div class="pattern"><span class="pill bad">Weakness</span><p>Recent prices or averages show downward momentum.</p></div>
+  <p class="sub">These labels are observations, not buy or sell instructions. Consider volatility, liquidity, fees and your ability to lose money.</p>
+ </div>
+</aside>
 </section>
-
-<footer>
-  Market Radar · Read-only prototype · No exchange connection or live trading.
-  Signals use recent percentage changes as a basic filter, not full technical analysis.
-  Crypto is highly volatile; you can lose some or all of the money invested.
-</footer>
+<footer>Market Radar PRO · CoinGecko public API · No automated trading or guaranteed returns</footer>
 </main>
-
 <script>
-const API = "https://api.coingecko.com/api/v3/coins/markets";
-const $ = id => document.getElementById(id);
-let coins = [];
-let chartCoin = "";
-let busy = false;
-
-function money(n) {
-  if (n == null || !Number.isFinite(n)) return "—";
-  return n.toLocaleString("en-AU", {
-    style:"currency", currency:"AUD",
-    maximumFractionDigits:n < 1 ? 6 : 2
-  });
+const API="https://api.coingecko.com/api/v3";
+const $=id=>document.getElementById(id);
+const palette=["#7ca7ff","#36d6a3","#ffb86b","#c29bff","#ff7185","#6be0e7"];
+let coins=[],cache={},priceChart=null,compareChart=null,chosen=["bitcoin","ethereum","ripple","solana"];
+const number=(n,d=2)=>n==null||!Number.isFinite(Number(n))?"—":Number(n).toLocaleString("en-AU",{maximumFractionDigits:d,minimumFractionDigits:d});
+const money=n=>n==null?"—":new Intl.NumberFormat("en-AU",{style:"currency",currency:"AUD",maximumFractionDigits:n<1?6:2}).format(n);
+const pct=n=>n==null?"—":(n>=0?"+":"")+number(n)+"%";
+const colorClass=n=>n>0?"good":n<0?"bad":"";
+function error(msg){$("error").style.display=msg?"block":"none";$("error").textContent=msg}
+async function get(url){const r=await fetch(url);if(!r.ok)throw Error(r.status===429?"CoinGecko rate limit reached. Wait a minute and refresh.":"Market data request failed ("+r.status+").");return r.json()}
+function signal(c){let d=c.price_change_percentage_24h||0,w=c.price_change_percentage_7d_in_currency||0;if(d>=1&&w>=2)return ["Momentum","good"];if(d<=-5||w<=-10)return ["Weakness","bad"];return ["Mixed","warn"]}
+async function load(){
+ $("refresh").disabled=true;$("status").textContent="Updating…";error("");
+ try{
+ coins=await get(API+"/coins/markets?vs_currency=aud&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h,7d");
+ $("status").textContent="● Data connected";$("status").className="pill good";
+ $("count").textContent=coins.length;
+ $("breadth").textContent=Math.round(coins.filter(c=>(c.price_change_percentage_24h||0)>0).length/coins.length*100)+"%";
+ $("momentum").textContent=coins.filter(c=>signal(c)[0]==="Momentum").length;
+ $("updated").textContent=new Date().toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"});
+ let old=$("coin").value;
+ $("coin").innerHTML=coins.map(c=>`<option value="${c.id}">${c.name} (${c.symbol.toUpperCase()})</option>`).join("");
+ $("coin").value=coins.some(c=>c.id===old)?old:"bitcoin";
+ renderTable();renderChips();
+ await Promise.all([loadPrice($("coin").value,+$("period").value),loadCompare()]);
+ }catch(e){$("status").textContent="Data unavailable";$("status").className="pill bad";error(e.message+" The dashboard remains available; try refreshing shortly.")}
+ finally{$("refresh").disabled=false}
 }
-function compact(n) {
-  if (n == null || !Number.isFinite(n)) return "—";
-  return new Intl.NumberFormat("en-AU", {
-    notation:"compact", maximumFractionDigits:2
-  }).format(n);
+function renderTable(){
+ let q=$("search").value.toLowerCase(),sort=$("sort").value;
+ let a=coins.filter(c=>c.name.toLowerCase().includes(q)||c.symbol.toLowerCase().includes(q));
+ a.sort((x,y)=>sort==="day"?(y.price_change_percentage_24h||0)-(x.price_change_percentage_24h||0):sort==="week"?(y.price_change_percentage_7d_in_currency||0)-(x.price_change_percentage_7d_in_currency||0):sort==="volume"?(y.total_volume||0)-(x.total_volume||0):(y.market_cap||0)-(x.market_cap||0));
+ $("rows").innerHTML=a.map(c=>{let s=signal(c);return `<tr><td><div class="asset">${c.name}</div><div class="symbol">${c.symbol.toUpperCase()}</div></td><td>${money(c.current_price)}</td><td class="${colorClass(c.price_change_percentage_24h)}">${pct(c.price_change_percentage_24h)}</td><td class="${colorClass(c.price_change_percentage_7d_in_currency)}">${pct(c.price_change_percentage_7d_in_currency)}</td><td>${short(c.market_cap)}</td><td>${short(c.total_volume)}</td><td><span class="pill ${s[1]}">${s[0]}</span></td></tr>`}).join("")||'<tr><td colspan="7">No matches.</td></tr>';
 }
-function pct(n) {
-  if (n == null || !Number.isFinite(n)) return "—";
-  return (n > 0 ? "+" : "") + n.toFixed(2) + "%";
+function short(n){return n==null?"—":new Intl.NumberFormat("en-AU",{notation:"compact",maximumFractionDigits:2}).format(n)}
+async function history(id,days){let k=id+":"+days;if(cache[k]&&Date.now()-cache[k].t<180000)return cache[k].d;let d=await get(API+"/coins/"+encodeURIComponent(id)+"/market_chart?vs_currency=aud&days="+days);cache[k]={t:Date.now(),d};return d}
+function ema(v,p){let k=2/(p+1),last=null;return v.map(x=>last=last==null?x:x*k+last*(1-k))}
+function rsi(v,p=14){if(v.length<p+1)return null;let g=0,l=0;for(let i=v.length-p;i<v.length;i++){let d=v[i]-v[i-1];if(d>0)g+=d;else l-=d}return l===0?100:100-100/(1+g/l)}
+function timeLabel(t,days){let d=new Date(t);return days===1?d.toLocaleTimeString("en-AU",{hour:"numeric"}):d.toLocaleDateString("en-AU",{month:"short",day:"numeric"})}
+function options(){return {responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{labels:{color:"#b6c4dc",usePointStyle:true,boxWidth:8}},tooltip:{backgroundColor:"#0b1220"}},scales:{x:{ticks:{color:"#8192ad",maxTicksLimit:8},grid:{color:"#202d42"}},y:{ticks:{color:"#8192ad"},grid:{color:"#202d42"}}}}}
+async function loadPrice(id,days){
+ if(!id)return;$("chartNote").textContent="Loading historical prices…";
+ try{
+ let d=await history(id,days),p=d.prices||[],v=p.map(x=>x[1]),labels=p.map(x=>timeLabel(x[0],days));
+ if(!v.length)throw Error("No historical price data returned.");
+ let e20=ema(v,20),e50=ema(v,50),c=coins.find(x=>x.id===id);
+ let sets=[{label:(c?c.name:"Price")+" · AUD",data:v,borderColor:palette[0],borderWidth:2,pointRadius:0,tension:.18}];
+ if($("ema20").checked)sets.push({label:"EMA 20",data:e20,borderColor:palette[1],borderWidth:1.5,pointRadius:0,borderDash:[4,3]});
+ if($("ema50").checked)sets.push({label:"EMA 50",data:e50,borderColor:palette[2],borderWidth:1.5,pointRadius:0,borderDash:[5,4]});
+ if(priceChart)priceChart.destroy();
+ priceChart=new Chart($("priceChart"),{type:"line",data:{labels,datasets:sets},options:options()});
+ let rv=rsi(v),lo=Math.min(...v),hi=Math.max(...v),a=e20[e20.length-1],b=e50[e50.length-1];
+ $("selectedName").textContent=c?c.name+" · "+c.symbol.toUpperCase():id;
+ $("trend").textContent=a>b?"Uptrend bias":a<b?"Downtrend bias":"Mixed";
+ $("trend").className="pill "+(a>b?"good":a<b?"bad":"warn");
+ $("m24").textContent=pct(c?.price_change_percentage_24h);$("m24").className=colorClass(c?.price_change_percentage_24h);
+ $("m7").textContent=pct(c?.price_change_percentage_7d_in_currency);$("m7").className=colorClass(c?.price_change_percentage_7d_in_currency);
+ $("mrsi").textContent=rv==null?"Not enough data":number(rv,1)+" · "+(rv>=70?"high":rv<=30?"low":"mid-range");
+ $("mema").textContent=a>b?"EMA 20 above 50":a<b?"EMA 20 below 50":"Averages overlap";
+ $("mlow").textContent=money(lo);$("mhigh").textContent=money(hi);
+ $("mvol").textContent=c?.market_cap?number(c.total_volume/c.market_cap*100,2)+"%":"—";
+ $("chartNote").textContent=days===1?"24 hours of historical prices.":"Last "+days+" days of historical prices. ";
+ $("chartNote").textContent+="Current chart value: "+money(v[v.length-1])+". EMA lines lag price and may give false signals.";
+ renderPatterns(v,rv,a,b);
+ }catch(e){$("chartNote").textContent="Could not load price history.";error(e.message)}
 }
-function signal(c) {
-  const d = c.price_change_percentage_24h;
-  const w = c.price_change_percentage_7d_in_currency;
-  if (d == null || w == null) return "HOLD";
-  if (d <= -5 || w <= -10) return "AVOID";
-  if (d >= 1 && w >= 2 && d < 12) return "BUY WATCH";
-  return "HOLD";
+function renderPatterns(v,rv,a,b){
+ let change=(v[v.length-1]/v[0]-1)*100,lo=Math.min(...v),hi=Math.max(...v);
+ let items=[
+ [change>2?"📈":change< -2?"📉":"↔️",change>2?"Rising price structure":change< -2?"Falling price structure":"Sideways / mixed",pct(change)+" over the selected period. This describes past movement, not a forecast."],
+ [a>b?"🟢":a<b?"🔴":"🟡",a>b?"EMA 20 above EMA 50":a<b?"EMA 20 below EMA 50":"Moving averages near each other","Averages can lag and cross temporarily in choppy markets."],
+ [rv>=70?"⚠️":rv<=30?"🧊":"🎚️",rv>=70?"RSI high zone":rv<=30?"RSI low zone":"RSI mid-range","RSI(14): "+(rv==null?"not enough data":number(rv,1))+". High or low readings do not guarantee a reversal."],
+ ["📍","Recent price range",money(lo)+" to "+money(hi)+". Recent extremes are not guaranteed support or resistance."]
+ ];
+ $("patterns").innerHTML=items.map(x=>`<div class="pattern"><b>${x[0]} ${x[1]}</b><p>${x[2]}</p></div>`).join("");
 }
-function signalClass(s) {
-  return s === "BUY WATCH" ? "buy" : s === "AVOID" ? "avoid" : "hold";
+function renderChips(){
+ $("chips").innerHTML=chosen.map(id=>{let c=coins.find(x=>x.id===id);return c?`<button class="chip" data-id="${id}">${c.symbol.toUpperCase()} ×</button>`:""}).join("")+
+ `<select id="addCoin"><option value="">+ Add coin</option>${coins.filter(c=>!chosen.includes(c.id)).map(c=>`<option value="${c.id}">${c.name} (${c.symbol.toUpperCase()})</option>`).join("")}</select>`;
+ $("chips").querySelectorAll("button").forEach(b=>b.onclick=()=>{chosen=chosen.filter(x=>x!==b.dataset.id);renderChips();loadCompare()});
+ $("addCoin").onchange=e=>{if(e.target.value&&chosen.length<6){chosen.push(e.target.value);renderChips();loadCompare()}else if(chosen.length>=6)alert("Compare up to six coins at once.")};
 }
-function render() {
-  const q = $("search").value.trim().toLowerCase();
-  const sort = $("sort").value;
-  const filt = $("filter").value;
-  let list = coins.filter(c =>
-    (c.name.toLowerCase().includes(q) || c.symbol.toLowerCase().includes(q)) &&
-    (filt === "all" || signal(c) === filt)
-  );
-  const keys = {
-    market_cap:"market_cap",
-    change24:"price_change_percentage_24h",
-    change7:"price_change_percentage_7d_in_currency",
-    volume:"total_volume"
-  };
-  list.sort((a,b) => (Number(b[keys[sort]]) || 0) - (Number(a[keys[sort]]) || 0));
-  $("rows").innerHTML = list.map(c => {
-    const s = signal(c);
-    const id = c.id.replace(/&/g,"&amp;").replace(/"/g,"&quot;");
-    return `<tr>
-      <td><span class="asset">${c.name}</span><span class="symbol">${c.symbol.toUpperCase()}</span></td>
-      <td>${money(c.current_price)}</td>
-      <td class="${(c.price_change_percentage_24h ?? 0)>=0?"up":"down"}">${pct(c.price_change_percentage_24h)}</td>
-      <td class="${(c.price_change_percentage_7d_in_currency ?? 0)>=0?"up":"down"}">${pct(c.price_change_percentage_7d_in_currency)}</td>
-      <td>${money(c.market_cap)}</td><td>${money(c.total_volume)}</td>
-      <td class="pill ${signalClass(s)}">${s}</td>
-    </tr>`;
-  }).join("") || `<tr><td colspan="7">No matching coins. Try a different search or filter.</td></tr>`;
-  $("shown").textContent = `Showing ${list.length} of ${coins.length} loaded coins.`;
+async function loadCompare(){
+ if(!chosen.length){if(compareChart)compareChart.destroy();return}
+ try{
+ let days=+$("comparePeriod").value;
+ let all=await Promise.all(chosen.map(async id=>({id,d:await history(id,days)})));
+ let labels=all[0].d.prices.map(p=>timeLabel(p[0],days));
+ let datasets=all.map((x,i)=>{let base=x.d.prices[0]?.[1]||1,c=coins.find(z=>z.id===x.id);return {label:c?c.name:x.id,data:x.d.prices.map(p=>(p[1]/base-1)*100),borderColor:palette[i%palette.length],borderWidth:2,pointRadius:0,tension:.18}});
+ if(compareChart)compareChart.destroy();
+ let o=options();o.scales.y.ticks.callback=v=>v+"%";
+ compareChart=new Chart($("compareChart"),{type:"line",data:{labels,datasets},options:o});
+ }catch(e){error("Comparison chart: "+e.message)}
 }
-function populateCoinSelect() {
-  const select = $("coinSelect");
-  const previous = chartCoin || select.value;
-  select.innerHTML = coins.map(c =>
-    `<option value="${c.id}">${c.name} (${c.symbol.toUpperCase()})</option>`
-  ).join("");
-  if (coins.some(c => c.id === previous)) select.value = previous;
-  chartCoin = select.value;
-  drawChart();
-}
-async function loadData() {
-  if (busy) return;
-  busy = true;
-  $("refresh").disabled = true;
-  $("status").textContent = "Fetching data…";
-  try {
-    const params = new URLSearchParams({
-      vs_currency:"aud",
-      order:"market_cap_desc",
-      per_page:"100",
-      page:"1",
-      sparkline:"true",
-      price_change_percentage:"24h,7d"
-    });
-    const response = await fetch(`${API}?${params}`, {
-      headers: { "accept":"application/json" }
-    });
-    if (!response.ok) throw new Error(
-      response.status === 429
-        ? "Rate limit reached. Wait a minute and retry."
-        : `Data provider returned HTTP ${response.status}.`
-    );
-    const data = await response.json();
-    if (!Array.isArray(data)) throw new Error("Unexpected data response.");
-    coins = data;
-    $("count").textContent = coins.length;
-    $("positive").textContent = coins.filter(c => (c.price_change_percentage_24h ?? -1) > 0).length;
-    $("buys").textContent = coins.filter(c => signal(c) === "BUY WATCH").length;
-    $("updated").textContent = new Date().toLocaleTimeString("en-AU");
-    $("status").textContent = "Data received; API updates may be delayed.";
-    render();
-    populateCoinSelect();
-  } catch (e) {
-    $("status").textContent = e.message;
-    if (!coins.length) $("rows").innerHTML =
-      `<tr><td colspan="7">Unable to load live data: ${e.message} Check your connection or try again later.</td></tr>`;
-  } finally {
-    busy = false;
-    $("refresh").disabled = false;
-  }
-}
-function drawChart() {
-  const canvas = $("chart");
-  const ctx = canvas.getContext("2d");
-  const width = canvas.clientWidth || 600;
-  const height = 230;
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = width * dpr;
-  canvas.height = height * dpr;
-  ctx.scale(dpr,dpr);
-  ctx.clearRect(0,0,width,height);
-  const c = coins.find(x => x.id === $("coinSelect").value);
-  const values = c && c.sparkline_in_7d && c.sparkline_in_7d.price;
-  if (!values || values.length < 2) {
-    ctx.fillStyle = "#9aacc6";
-    ctx.fillText("Seven-day chart data is not available for this coin.", 12, 35);
-    return;
-  }
-  const min = Math.min(...values), max = Math.max(...values);
-  const range = max - min || 1;
-  const pad = 15;
-  ctx.strokeStyle = "#293952";
-  ctx.lineWidth = 1;
-  for (let i=0;i<4;i++) {
-    const y = pad + (height-2*pad)*i/3;
-    ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(width-pad,y); ctx.stroke();
-  }
-  ctx.strokeStyle = values[values.length-1] >= values[0] ? "#38d996" : "#ff7885";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  values.forEach((v,i) => {
-    const x = pad + i*(width-2*pad)/(values.length-1);
-    const y = height-pad-(v-min)*(height-2*pad)/range;
-    if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  });
-  ctx.stroke();
-  ctx.fillStyle = "#9aacc6";
-  ctx.fillText("7 days ago",pad,height-2);
-  ctx.fillText("Now",width-42,height-2);
-  $("chartNote").textContent = `${c.name}: seven-day price history (AUD). Past movement does not predict future returns.`;
-}
-function calculate() {
-  const entry = Number($("entry").value);
-  const stop = Number($("stopPct").value);
-  const target = Number($("targetPct").value);
-  const amount = Number($("amount").value);
-  const valid = entry > 0 && stop > 0 && stop < 100 && target > 0 && amount >= 0;
-  if (!valid) {
-    ["stopPrice","targetPrice","loss","gain"].forEach(id => $(id).textContent = "Enter valid values");
-    return;
-  }
-  $("stopPrice").textContent = money(entry*(1-stop/100));
-  $("targetPrice").textContent = money(entry*(1+target/100));
-  $("loss").textContent = money(amount*stop/100);
-  $("gain").textContent = money(amount*target/100);
-}
-$("refresh").addEventListener("click",loadData);
-$("search").addEventListener("input",render);
-$("sort").addEventListener("change",render);
-$("filter").addEventListener("change",render);
-$("coinSelect").addEventListener("change",() => { chartCoin=$("coinSelect").value; drawChart(); });
-["entry","stopPct","targetPct","amount"].forEach(id => $(id).addEventListener("input",calculate));
-window.addEventListener("resize",drawChart);
-calculate();
-loadData();
-setInterval(loadData,300000);
+$("refresh").onclick=load;
+$("coin").onchange=()=>loadPrice($("coin").value,+$("period").value);
+$("period").onchange=()=>loadPrice($("coin").value,+$("period").value);
+$("comparePeriod").onchange=loadCompare;
+$("search").oninput=renderTable;
+$("sort").onchange=renderTable;
+$("ema20").onchange=()=>loadPrice($("coin").value,+$("period").value);
+$("ema50").onchange=()=>loadPrice($("coin").value,+$("period").value);
+load();
+setInterval(()=>{if(!document.hidden)load()},5*60*1000);
 </script>
 </body>
 </html>
